@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+		<style>
+            body{
+                width: 100%;
+                text-align: center;
+            }
+			canvas{
+				display: inline;
+			}
+		</style>
+    </head>
+    <body>
+        <canvas id="canvas" width="600" height="600"></canvas>
+
+        <script src="double_pendulum.js"></script>
+
+        <script>
+            var c = document.getElementById("canvas");
+            var ctx = c.getContext("2d");
+
+            var i = 0;
+
+            function loop(){
+                var theta1 = theta_1[i];
+                var theta2 = theta_2[i];
+                i++;
+                if(i >= 1000){
+                    i = 0;
+                }
+
+                ctx.fillStyle = "#000000";
+                ctx.fillRect(0, 0, c.width, c.height);
+
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(c.width / 2, c.height / 2);
+                ctx.lineTo(c.width / 2 + 100 * Math.sin(theta1), c.height / 2 + 100 * Math.cos(theta1));
+                ctx.lineTo(c.width / 2 + 100 * Math.sin(theta1) + 100 * Math.sin(theta2), c.height / 2 + 100 * Math.cos(theta1) + 100 * Math.cos(theta2));
+                ctx.stroke()
+
+                ctx.fillStyle = "#ffffff";
+
+                ctx.beginPath();
+                ctx.arc(c.width / 2, c.height / 2, 5, 0, 2 * Math.PI, false);
+                ctx.fill()
+
+                ctx.beginPath();
+                ctx.arc(c.width / 2 + 100 * Math.sin(theta1), c.height / 2 + 100 * Math.cos(theta1), 5, 0, 2 * Math.PI, false);
+                ctx.fill()
+
+                ctx.beginPath();
+                ctx.arc(c.width / 2 + 100 * Math.sin(theta1) + 100 * Math.sin(theta2), c.height / 2 + 100 * Math.cos(theta1) + 100 * Math.cos(theta2), 5, 0, 2 * Math.PI, false);
+                ctx.fill()
+
+                //requestAnimationFrame(loop);
+            }
+            //loop();
+
+
+            setInterval(function() {
+                loop();
+            }, 1000/100);
+        </script>
+    </body>
+</html>
