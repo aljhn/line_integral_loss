@@ -22,7 +22,7 @@ Run the four model training scripts separately:
 * `python sonode.py`
 * `python line_integral.py`
 
-Each of these scripts writes a txt file containing the loss history
+Each of these scripts writes a txt file containing the losses.
 
 Then run the plotting script to generate the figure above:
 
@@ -45,7 +45,7 @@ Run the two scripts separately:
 * `python classifier_lstm.py`
 * `python classifier_line_integral.py`
 
-Each of these scripts writes a txt file containing the loss history
+Each of these scripts writes a txt file containing the accuracies.
 
 Then run the plotting script to generate the figure above:
 
