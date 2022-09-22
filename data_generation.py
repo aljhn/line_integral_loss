@@ -15,13 +15,15 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class DoublePendulumSystem(nn.Module):
 
-    def __init__(self):
+    def __init__(self, controlled=False):
         super().__init__()
         self.m1 = 1
         self.m2 = 1
         self.l1 = 1
         self.l2 = 1
         self.g = 9.81
+
+        self.controlled = controlled
 
     def forward(self, t, y):
         batch_size = y.shape[0]
@@ -43,6 +45,12 @@ class DoublePendulumSystem(nn.Module):
         ff = torch.zeros((batch_size, 2, 1))
         ff[:, 0, 0] = - self.m2 * self.l1 * self.l2 * torch.sin(y[:, 0] - y[:, 1]) * (y[:, 3]**2) - (self.m1 + self.m2) * self.g * self.l1 * torch.sin(y[:, 0])
         ff[:, 1, 0] = self.m2 * self.l1 * self.l2 * torch.sin(y[:, 0] - y[:, 1]) * (y[:, 2]**2) - self.m2 * self.g * self.l2 * torch.sin(y[:, 1])
+
+        if self.controlled:
+            u1 = -0.1 * y[:, 0] - 0.01 * y[:, 2]
+            u2 = -5.0 * (y[:, 1] - y[:, 0]) - 2.0 * y[:, 3]
+            u = torch.stack([u1, u2], dim=1).unsqueeze(2)
+            ff += u
 
         yy = torch.matmul(M_inv, ff)
 
@@ -75,7 +83,7 @@ class SinglePendulumSystem(nn.Module):
         return torch.concat([y_dot, y_ddot], dim=1)
 
 
-def generate_double_pendulum(n, h, T0, T1, diff=True, noise=True):
+def generate_double_pendulum(n, h, T0, T1, diff=True, noise=True, controlled=False):
     y0 = torch.zeros((n, 4))
     y0[:, 0] = torch.rand(n) * 6 - 3
     y0[:, 1] = y0[:, 0] + torch.rand(n) - 0.5
@@ -84,7 +92,7 @@ def generate_double_pendulum(n, h, T0, T1, diff=True, noise=True):
 
     t = torch.arange(T0, T1, h)
     with torch.no_grad():
-        y = odeint(DoublePendulumSystem(), y0, t, method="rk4")
+        y = odeint(DoublePendulumSystem(controlled), y0, t, method="rk4")
 
     if noise:
         y += torch.randn_like(y) * 0.01
@@ -143,7 +151,7 @@ def simulate_double_pendulum():
     T1 = 10
     t = torch.arange(0, T1, 0.01)
 
-    y = odeint(DoublePendulumSystem(), y0, t, method="rk4")
+    y = odeint(DoublePendulumSystem(True), y0, t, method="rk4")
     theta_1 = y[:, 0, 0]
     theta_2 = y[:, 0, 1]
     theta_1_dot = y[:, 0, 2]
