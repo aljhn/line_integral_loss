@@ -1,5 +1,7 @@
 # Learning Ordinary Differential Equations with the Line Integral Loss Function
 
+[OpenReview](https://openreview.net/forum?id=6EvTvGpiXe0) link.
+
 Contains a PyTorch implementation for the two experiments.
 Also requires the [torchdiffeq](https://github.com/rtqichen/torchdiffeq) package to run.
 
